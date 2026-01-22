@@ -1,18 +1,5 @@
-modId="tacz_firstaid_compat"
-displayName="[TaCZ] First Aid Compat"
-description='''
-Compatibility mod that enables precise 3D hitbox-based damage distribution
-when using TacZ (Timeless and Classics Zero) with First Aid.
-
-Features:
-- Realistic bodypart targeting based on exact hit locations
-- Proper armor protection calculations per bodypart
-- Damage spillover mechanics from limbs to torso
-- Support for both bullet and explosion damage
-'''
-logoFile="logo.png"
-credits="Ranazy"
-authors="Ranazy"
+modLoader="javafml"
+loaderVersion="[47,)"
 license="MIT"
 
 [[mods]]
