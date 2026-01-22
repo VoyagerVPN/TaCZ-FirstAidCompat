@@ -1,0 +1,58 @@
+modId="tacz_firstaid_compat"
+displayName="[TaCZ] First Aid Compat"
+description='''
+Compatibility mod that enables precise 3D hitbox-based damage distribution
+when using TacZ (Timeless and Classics Zero) with First Aid.
+
+Features:
+- Realistic bodypart targeting based on exact hit locations
+- Proper armor protection calculations per bodypart
+- Damage spillover mechanics from limbs to torso
+- Support for both bullet and explosion damage
+'''
+logoFile="logo.png"
+credits="Ranazy"
+authors="Ranazy"
+license="MIT"
+
+[[mods]]
+modId="tacz_firstaid_compat"
+version="${file.jarVersion}"
+displayName="[TaCZ] First Aid Compat"
+description='''
+Compatibility mod that enables precise 3D hitbox-based damage distribution
+when using TacZ (Timeless and Classics Zero) with First Aid.
+'''
+logoFile="logo.png"
+credits="Ranazy"
+authors="Ranazy"
+displayURL="https://github.com/Ranazy/tacz-firstaid-compat"
+updateJSONURL="https://raw.githubusercontent.com/Ranazy/tacz-firstaid-compat/main/update.json"
+
+[[dependencies.tacz_firstaid_compat]]
+modId="forge"
+mandatory=true
+versionRange="[47,48)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.tacz_firstaid_compat]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1]"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.tacz_firstaid_compat]]
+modId="tacz"
+mandatory=true
+versionRange="[1.1.7,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.tacz_firstaid_compat]]
+modId="firstaid"
+mandatory=true
+versionRange="[1.20.1-1.1,)"
+ordering="AFTER"
+side="BOTH"

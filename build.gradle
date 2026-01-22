@@ -1,0 +1,98 @@
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
+mixin {
+    add sourceSets.main, 'tacz_firstaid_compat.refmap.json'
+    config 'tacz_firstaid_compat.mixins.json'
+}
+
+minecraft {
+    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
+    
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            
+            mods {
+                tacz_firstaid_compat {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {
+            property 'forge.enabledGameTestNamespaces', 'tacz_firstaid_compat'
+        }
+
+        server {
+            property 'forge.enabledGameTestNamespaces', 'tacz_firstaid_compat'
+            args '--nokogui'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spongepowered.org/repository/maven-public' }
+    maven { 
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven' 
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    
+    annotationProcessor variantOf(libs.org.spongepowered.mixin) { classifier 'processor' }
+    
+    // TacZ dependency
+    compileOnly fg.deobf("maven.modrinth:timeless-and-classics-zero:${tacz_version}")
+    
+    // FirstAid dependency
+    compileOnly fg.deobf("maven.modrinth:firstaid:${firstaid_version}")
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+processResources {
+    inputs.property 'version', project.version
+
+    filesMatching(['META-INF/mods.toml']) {
+        expand 'version': project.version
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title': project.mod_id,
+            'Specification-Vendor': 'Ranazy',
+            'Specification-Version': '1',
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': 'Ranazy',
+            'MixinConfigs': 'tacz_firstaid_compat.mixins.json'
+        ])
+    }
+    
+    finalizedBy 'reobfJar'
+}
