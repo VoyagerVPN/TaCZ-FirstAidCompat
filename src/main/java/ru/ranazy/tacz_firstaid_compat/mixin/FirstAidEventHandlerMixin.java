@@ -38,7 +38,8 @@ public class FirstAidEventHandlerMixin {
             value = "INVOKE",
             target = "Lichttt/mods/firstaid/common/util/CommonUtils;getDamageModel(Lnet/minecraft/world/entity/player/Player;)Lichttt/mods/firstaid/api/damagesystem/AbstractPlayerDamageModel;",
             shift = At.Shift.AFTER
-        )
+        ),
+        remap = false
     )
     private static void tacZ_firstaid$detectTacZDamage(LivingHurtEvent event, CallbackInfo ci) {
         if (!(event.getEntity() instanceof Player)) {
@@ -71,7 +72,8 @@ public class FirstAidEventHandlerMixin {
         at = @At(
             value = "INVOKE",
             target = "Lichttt/mods/firstaid/common/damagesystem/distribution/DamageDistribution;handleDamageTaken(Lichttt/mods/firstaid/api/distribution/IDamageDistributionAlgorithm;Lichttt/mods/firstaid/api/damagesystem/AbstractPlayerDamageModel;FLnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/damagesource/DamageSource;ZZ)F"
-        )
+        ),
+        remap = false
     )
     private static float tacZ_firstaid$replaceDistribution(
             IDamageDistributionAlgorithm original,
