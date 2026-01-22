@@ -1,5 +1,7 @@
 package ru.ranazy.tacz_firstaid_compat.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.entity.EntityKineticBullet;
 import ichttt.mods.firstaid.api.damagesystem.AbstractPlayerDamageModel;
 import ichttt.mods.firstaid.api.distribution.IDamageDistributionAlgorithm;
@@ -13,14 +15,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.ranazy.tacz_firstaid_compat.compat.firstaid.TacZDamageDistribution;
 import ru.ranazy.tacz_firstaid_compat.mixininterface.EntityKineticBulletExtension;
 
 /**
  * Intercepts FirstAid's damage handling to provide precise bodypart targeting for TacZ weapons.
- * This replaces FirstAid's default random/height-based distribution with our 3D hit detection.
  */
 @Mixin(value = EventHandler.class, remap = false)
 public class FirstAidEventHandlerMixin {
@@ -38,8 +38,7 @@ public class FirstAidEventHandlerMixin {
             value = "INVOKE",
             target = "Lichttt/mods/firstaid/common/util/CommonUtils;getDamageModel(Lnet/minecraft/world/entity/player/Player;)Lichttt/mods/firstaid/api/damagesystem/AbstractPlayerDamageModel;",
             shift = At.Shift.AFTER
-        ),
-        remap = false
+        )
     )
     private static void tacZ_firstaid$detectTacZDamage(LivingHurtEvent event, CallbackInfo ci) {
         if (!(event.getEntity() instanceof Player)) {
@@ -49,54 +48,49 @@ public class FirstAidEventHandlerMixin {
         DamageSource source = event.getSource();
         Entity directEntity = source.getDirectEntity();
 
-        // Check if damage is from a TacZ bullet
         if (directEntity instanceof EntityKineticBullet) {
             Vec3 hitLocation = ((EntityKineticBulletExtension) directEntity).tacZ_firstaid$getLastHitLocation();
 
             if (hitLocation != null) {
-                // Store custom distribution for this bullet
                 tacZ_firstaid$customDistribution.set(new TacZDamageDistribution(hitLocation));
                 return;
             }
         }
 
-        // Clear any previous custom distribution
         tacZ_firstaid$customDistribution.remove();
     }
 
     /**
-     * Redirects the handleDamageTaken call to use our custom distribution if available.
+     * Wraps the handleDamageTaken call to use our custom distribution if available.
+     * WrapOperation is more robust than Redirect for cross-mod compatibility.
      */
-    @Redirect(
+    @WrapOperation(
         method = "onLivingHurt",
         at = @At(
             value = "INVOKE",
             target = "Lichttt/mods/firstaid/common/damagesystem/distribution/DamageDistribution;handleDamageTaken(Lichttt/mods/firstaid/api/distribution/IDamageDistributionAlgorithm;Lichttt/mods/firstaid/api/damagesystem/AbstractPlayerDamageModel;FLnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/damagesource/DamageSource;ZZ)F"
-        ),
-        remap = false
+        )
     )
     private static float tacZ_firstaid$replaceDistribution(
-            IDamageDistributionAlgorithm original,
+            IDamageDistributionAlgorithm originalAlgorithm,
             AbstractPlayerDamageModel damageModel,
             float damage,
             Player player,
             DamageSource source,
             boolean addStat,
-            boolean redistributeIfLeft
+            boolean redistributeIfLeft,
+            Operation<Float> original
     ) {
         try {
             IDamageDistributionAlgorithm custom = tacZ_firstaid$customDistribution.get();
+            
             if (custom != null) {
-                // Call handleDamageTaken with our custom distribution
-                return ichttt.mods.firstaid.common.damagesystem.distribution.DamageDistribution.handleDamageTaken(
-                    custom, damageModel, damage, player, source, addStat, redistributeIfLeft
-                );
+                // Call original logic but with our custom algorithm replaced as the first argument
+                return original.call(custom, damageModel, damage, player, source, addStat, redistributeIfLeft);
             }
 
-            // Use the original distribution
-            return ichttt.mods.firstaid.common.damagesystem.distribution.DamageDistribution.handleDamageTaken(
-                original, damageModel, damage, player, source, addStat, redistributeIfLeft
-            );
+            // Fallback to original FirstAid distribution
+            return original.call(originalAlgorithm, damageModel, damage, player, source, addStat, redistributeIfLeft);
         } finally {
             tacZ_firstaid$customDistribution.remove();
         }
