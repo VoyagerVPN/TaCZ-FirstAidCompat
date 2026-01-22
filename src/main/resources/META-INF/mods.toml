@@ -17,7 +17,7 @@ license="MIT"
 
 [[mods]]
 modId="tacz_firstaid_compat"
-version="${file.jarVersion}"
+version="${version}"
 displayName="[TaCZ] First Aid Compat"
 description='''
 Compatibility mod that enables precise 3D hitbox-based damage distribution

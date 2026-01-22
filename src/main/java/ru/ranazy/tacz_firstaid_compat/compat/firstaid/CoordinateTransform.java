@@ -45,10 +45,10 @@ public class CoordinateTransform {
      */
     private static boolean isCrawling(Player player) {
         IGunOperator operator = IGunOperator.fromLivingEntity(player);
-        if (operator == null || operator.getSynData() == null) {
+        if (operator == null || operator.getDataHolder() == null) {
             return false;
         }
-        return operator.getSynData().isCrawling();
+        return operator.getDataHolder().isCrawling;
     }
 
     /**

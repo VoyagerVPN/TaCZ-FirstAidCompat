@@ -107,7 +107,7 @@ public class ExplosionDistributor implements IDamageDistributionAlgorithm {
         }
 
         AbstractDamageablePart part = damageModel.getFromEnum(partEnum);
-        float minHealth = (part.canCauseDeath() && FirstAidConfig.SERVER.useFriendlyRandomDistribution.get()) ? 1.0f : 0f;
+        float minHealth = (part.canCauseDeath && FirstAidConfig.SERVER.useFriendlyRandomDistribution.get()) ? 1.0f : 0f;
 
         float undelivered = part.damage(currentDamage, player, addStat, minHealth);
 
