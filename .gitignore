@@ -32,3 +32,6 @@ crash-reports/
 # Windows
 Thumbs.db
 desktop.ini
+
+# Project-local cache
+.cache/

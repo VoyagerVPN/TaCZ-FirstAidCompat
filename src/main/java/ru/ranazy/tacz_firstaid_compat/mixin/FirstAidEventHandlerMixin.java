@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.ranazy.tacz_firstaid_compat.compat.firstaid.TacZDamageDistribution;
+import ru.ranazy.tacz_firstaid_compat.compat.firstaid.ExplosionDistributor;
 import ru.ranazy.tacz_firstaid_compat.mixininterface.EntityKineticBulletExtension;
 
 /**
@@ -46,6 +47,11 @@ public class FirstAidEventHandlerMixin {
         }
 
         DamageSource source = event.getSource();
+        Vec3 explosionCenter = ExplosionDistributor.getExplosionCenter(source);
+        if (explosionCenter != null) {
+            tacZ_firstaid$customDistribution.set(new ExplosionDistributor(explosionCenter));
+            return;
+        }
         Entity directEntity = source.getDirectEntity();
 
         if (directEntity instanceof EntityKineticBullet) {

@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-10-26
+
+- Взрывы передают фактический центр из Forge ExplosionEvent.Detonate в алгоритм распределения First Aid.
+- Исправлена потеря взрывного урона при переносе из разрушенной стопы: коэффициент взрыва сохраняется на всём пути.
+- MixinExtras 0.5.0 включён в итоговый JAR через Forge Jar-in-Jar.
+- Добавлены четыре Forge GameTest: центр взрыва, перенос из стопы, две составляющие пули, броня и бронепробитие.
+
+Подготовка: `.\setup.ps1`. Сборка: `.\gradlew.bat build`. Проверки: `.\gradlew.bat runGameTestServer --offline` после заполнения `.cache/gradle`. JDK и моды закреплены с хешами в `dependencies.lock.json`; wrapper, build output и тестовый мир используют проектную `.cache`. Итоговый JAR: `.cache/build/libs/tacz-firstaid-compat-1.0.1.jar`.
+
+GameTest подаёт события урона напрямую. Клиентская стрельба и визуальное совпадение хитбоксов этими проверками не подтверждаются.
+
 ## [1.0.0] - 2026-01-23
 
 ### Fixed

@@ -1,0 +1,22 @@
+{
+  "mods": [
+    {
+      "path": ".cache/deps/firstaid-1.20.1-1.1.jar",
+      "url": "https://cdn.modrinth.com/data/eTiYU57B/versions/JzYydXeE/firstaid-1.20.1-1.1.jar",
+      "algorithm": "SHA512",
+      "hash": "614e6f36bf1ef441446901710ed6512cb0d3878857d3b5a3bf707e50a26f53505af7330df7a4aa7b4d6efece80ae3cb34fbad549ed28986a755389bdef0538a9"
+    },
+    {
+      "path": ".cache/deps/tacz-1.20.1-1.1.8-hotfix.jar",
+      "url": "https://cdn.modrinth.com/data/SzzJttH8/versions/yOVIzIJR/tacz-1.20.1-1.1.8-hotfix.jar",
+      "algorithm": "SHA512",
+      "hash": "bf35bd51dfe39fdffc3f4f7b6695e85348b64807e2977bca813decdfbe4c2d7cd5e15c437e42a012aaa067e271b02cd92f3d32e4fa08d36fedc141e668a115c6"
+    }
+  ],
+  "jdk": {
+    "path": ".cache/tools/OpenJDK17U-jdk_x64_windows_hotspot_17.0.20.1_1.zip",
+    "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.20.1%2B1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.20.1_1.zip",
+    "algorithm": "SHA256",
+    "hash": "e53a79c3c3d86865bd7e787903884331068e71321714ffd44f145785affc7cb0"
+  }
+}

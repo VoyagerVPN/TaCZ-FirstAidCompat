@@ -1,12 +1,13 @@
 plugins {
     id 'java'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.minecraftforge.gradle' version '6.0.54'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
 }
 
 version = project.mod_version
 group = project.maven_group
+layout.buildDirectory = layout.projectDirectory.dir('.cache/build')
 
 base {
     archivesName = project.archives_base_name
@@ -15,6 +16,8 @@ base {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
+
+jarJar.enable()
 
 mixin {
     add sourceSets.main, 'tacz_firstaid_compat.refmap.json'
@@ -26,7 +29,7 @@ minecraft {
     
     runs {
         configureEach {
-            workingDirectory project.file('run')
+            workingDirectory project.file('.cache/run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
             
@@ -45,16 +48,24 @@ minecraft {
             property 'forge.enabledGameTestNamespaces', 'tacz_firstaid_compat'
             args '--nokogui'
         }
+
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', project.mod_id
+            mods {
+                tacz_firstaid_compat {
+                    source sourceSets.test
+                }
+            }
+        }
     }
 }
 
 repositories {
+    flatDir { dirs '.cache/deps' }
     mavenCentral()
-    maven { url 'https://repo.spongepowered.org/repository/maven-public' }
-    maven { url 'https://jitpack.io' }
-    maven { 
-        name = 'Modrinth'
-        url = 'https://api.modrinth.com/maven' 
+    maven {
+        url 'https://repo.spongepowered.org/repository/maven-public'
+        content { includeGroup 'org.spongepowered' }
     }
 }
 
@@ -65,19 +76,17 @@ dependencies {
     
     // MixinExtras
     implementation "io.github.llamalad7:mixinextras-forge:0.5.0"
+    jarJar(group: 'io.github.llamalad7', name: 'mixinextras-forge', version: '[0.5.0,0.6)') {
+        jarJar.pin(it, '0.5.0')
+    }
     compileOnly "io.github.llamalad7:mixinextras-common:0.5.0"
     annotationProcessor "io.github.llamalad7:mixinextras-common:0.5.0"
     
-    // MixinSquared
-    implementation "com.github.bawnorton.mixinsquared:mixinsquared-forge:0.3.3"
-    compileOnly "com.github.bawnorton.mixinsquared:mixinsquared-common:0.3.3"
-    annotationProcessor "com.github.bawnorton.mixinsquared:mixinsquared-common:0.3.3"
-
     // TacZ dependency
-    compileOnly fg.deobf("maven.modrinth:timeless-and-classics-zero:${tacz_version}")
+    implementation fg.deobf("local:tacz-1.20.1:${tacz_version}")
     
     // FirstAid dependency
-    compileOnly fg.deobf("maven.modrinth:firstaid:${firstaid_version}")
+    implementation fg.deobf("local:firstaid:${firstaid_version}")
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -93,6 +102,7 @@ processResources {
 }
 
 jar {
+    destinationDirectory = layout.projectDirectory.dir('.cache/intermediate')
     manifest {
         attributes([
             'Specification-Title': project.mod_id,
@@ -107,3 +117,11 @@ jar {
     
     finalizedBy 'reobfJar'
 }
+
+tasks.named('jarJar') {
+    archiveClassifier = ''
+    manifest.from(tasks.jar.manifest)
+    finalizedBy 'reobfJarJar'
+}
+
+reobf { jarJar {} }

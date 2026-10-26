@@ -19,7 +19,7 @@ A compatibility mod that enables precise 3D hitbox-based damage distribution whe
 
 ## Installation
 
-1. Download the mod JAR from [Modrinth](#) or [Releases](https://github.com/Ranazy/tacz-firstaid-compat/releases)
+1. Download the mod JAR from [Releases](https://github.com/VoyagerVPN/TaCZ-FirstAidCompat/releases)
 2. Place it in your `mods` folder
 3. Make sure both TacZ and First Aid are installed
 4. Launch the game!
@@ -56,5 +56,5 @@ MIT License - See [LICENSE](LICENSE) for details
 ## Support
 
 For issues, suggestions, or questions:
-- Open an issue on [GitHub](https://github.com/Ranazy/tacz-firstaid-compat/issues)
+- Open an issue on [GitHub](https://github.com/VoyagerVPN/TaCZ-FirstAidCompat/issues)
 - Join our Discord: [Link TBD]

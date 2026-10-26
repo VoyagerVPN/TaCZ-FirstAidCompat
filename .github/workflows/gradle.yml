@@ -20,20 +20,27 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
+    - name: Prepare pinned mod dependencies
+      shell: pwsh
+      run: ./setup.ps1 -SkipJdk
     - name: Build with Gradle
-      run: ./gradlew build
+      run: bash ./gradlew --console=plain --project-cache-dir .cache/gradle-project build runGameTestServer
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
         name: tacz-firstaid-compat-jar
-        path: build/libs/*.jar
+        path: .cache/build/libs/*.jar
+        include-hidden-files: true
+        if-no-files-found: error
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')
-      uses: softprops/action-gh-release@v2
-      with:
-        files: build/libs/*.jar
-        body_path: CHANGELOG.md
+      shell: bash
+      run: |
+        # Проверенный вручную релиз сохраняет свой JAR и описание.
+        if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+          echo "Release already exists; keeping its verified assets and notes."
+        else
+          gh release create "$GITHUB_REF_NAME" .cache/build/libs/*.jar --repo "$GITHUB_REPOSITORY" --verify-tag --title "$GITHUB_REF_NAME" --notes-file CHANGELOG.md
+        fi
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

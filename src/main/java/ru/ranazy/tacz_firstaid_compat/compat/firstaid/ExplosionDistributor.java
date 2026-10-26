@@ -16,6 +16,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.event.level.ExplosionEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import ru.ranazy.tacz_firstaid_compat.TaCZFirstAidCompat;
+
+import javax.annotation.Nullable;
 
 import java.util.*;
 
@@ -23,7 +29,24 @@ import java.util.*;
  * Distributes explosion damage based on proximity of bodyparts to the blast center.
  * Uses distance-based falloff for realistic explosion damage.
  */
+@Mod.EventBusSubscriber(modid = TaCZFirstAidCompat.MOD_ID)
 public class ExplosionDistributor implements IDamageDistributionAlgorithm {
+
+    // Источник хранится слабо: несколько жертв используют один взрыв, после него запись освобождается.
+    private static final Map<DamageSource, Vec3> EXPLOSION_CENTERS =
+            Collections.synchronizedMap(new WeakHashMap<>());
+
+    @SubscribeEvent
+    public static void captureExplosion(ExplosionEvent.Detonate event) {
+        if (!event.getLevel().isClientSide) {
+            EXPLOSION_CENTERS.put(event.getExplosion().getDamageSource(), event.getExplosion().getPosition());
+        }
+    }
+
+    @Nullable
+    public static Vec3 getExplosionCenter(DamageSource source) {
+        return EXPLOSION_CENTERS.get(source);
+    }
 
     public static final Codec<ExplosionDistributor> CODEC = Codec.unit(() -> new ExplosionDistributor(Vec3.ZERO));
 

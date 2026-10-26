@@ -41,7 +41,7 @@ public class SpilloverHandler {
 
         // Special handling for feet: damage spills to leg first, then to body
         if (sourcePart == EnumPlayerPart.LEFT_FOOT || sourcePart == EnumPlayerPart.RIGHT_FOOT) {
-            handleFootSpillover(player, damageModel, sourcePart, remainingDamage);
+            handleFootSpillover(player, damageModel, sourcePart, remainingDamage, isExplosion);
             return;
         }
 
@@ -66,14 +66,15 @@ public class SpilloverHandler {
         Player player,
         AbstractPlayerDamageModel damageModel,
         EnumPlayerPart footPart,
-        float remainingDamage
+        float remainingDamage,
+        boolean isExplosion
     ) {
         EnumPlayerPart legPart = (footPart == EnumPlayerPart.LEFT_FOOT)
             ? EnumPlayerPart.LEFT_LEG
             : EnumPlayerPart.RIGHT_LEG;
 
         AbstractDamageablePart leg = damageModel.getFromEnum(legPart);
-        float legSpillover = remainingDamage * 0.8f;
+        float legSpillover = remainingDamage * (isExplosion ? 1.0f : 0.8f);
 
         if (leg.currentHealth > 0) {
             float legUndelivered = leg.damage(legSpillover, player, true);
@@ -83,8 +84,8 @@ public class SpilloverHandler {
                 applyToBody(player, damageModel, legUndelivered);
             }
         } else {
-            // Leg is destroyed, 40% goes to body instead (50% energy loss)
-            float bodySpillover = remainingDamage * 0.4f;
+            // Взрыв передаётся полностью; для пули сохраняется прежний коэффициент 40%.
+            float bodySpillover = remainingDamage * (isExplosion ? 1.0f : 0.4f);
             applyToBody(player, damageModel, bodySpillover);
         }
     }
